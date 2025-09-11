@@ -31,8 +31,8 @@ FROM departures
 JOIN arrivals
 USING (airport_code)
 )
-SELECT pa.city, pa.country, pa.name, 
+SELECT p.city, p.country, p.name, 
 	ts.*
 FROM total_stats ts
-JOIN {{ref('prep_flights')}}
-ON ts.airport_code = faa
+JOIN {{ref('prep_flights')}} p
+ON ts.airport_code = p.faa
