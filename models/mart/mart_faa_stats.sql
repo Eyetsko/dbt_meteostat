@@ -34,5 +34,5 @@ USING (airport_code)
 SELECT p.city, p.country, p.name, 
 	ts.*
 FROM total_stats ts
-JOIN {{ref('prep_flights')}} p
-ON ts.airport_code = p.faa
+JOIN {{ref('prep_airports')}} pa
+ON ts.airport_code = pa.faa
