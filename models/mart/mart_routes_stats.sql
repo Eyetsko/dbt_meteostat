@@ -1,7 +1,7 @@
 WITH 
-origin AS (
-	SELECT origin origin_airport_code
-		,dest dest_airport_code
+flight_stats AS (
+	SELECT origin
+		,dest
 		,count(*)
 		,count(DISTINCT tail_number) unique_airplanes
 		,count(DISTINCT airline) unique_airlines
@@ -16,18 +16,18 @@ origin AS (
 	FROM {{ref('prep_flights')}}
 	GROUP BY origin, dest
 ),
-totals AS (
-SELECT a1.city, a1.country, a1.name, o.origin_airport_code, a2.name, a2.city, a2.country, o.dest_airport_code
-	,unique_airplanes
-	,unique_airlines
-	,average_elapsed_time
-	,average_arr_delay
-	,max_arr_delay
-	,min_arr_delay
-	,total_cancelled
-	,total_diverted
-FROM origin o
-LEFT JOIN  {{ref('prep_airports')}} a1 ON o.origin_airport_code = a1.faa 
-LEFT JOIN  {{ref('prep_airports')}} a2 ON o.dest_airport_code = a2.faa
-)
-SELECT * FROM totals
+add_names AS (
+	SELECT o.city origin_city
+		,d.city dest_city
+		,o.name origin_name
+		,d.name dest_name
+		,f.*
+	FROM flight_stats f
+	LEFT JOIN {{ref('prep_airports')}} o
+		ON o.faa = origin
+	LEFT JOIN {{ref('prep_airports')}} d
+		ON d.faa = dest
+		)
+SELECT *
+FROM add_names
+ORDER BY (origin, dest) DESC
